@@ -1,0 +1,55 @@
+trigger:
+  - master
+
+variables:
+  BASE_BRANCH: $[ coalesce(variables['System.PullRequest.TargetBranch'], 'master~1') ]
+  BASE_SHA: origin/$BASE_BRANCH
+
+jobs:
+  - job: initial_setup
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      IS_PR: $[ eq(variables['Build.Reason'], 'PullRequest') ]
+    steps:
+      - template: .azure-pipelines/steps/install-node-modules.yml
+
+  - job: format_check
+    dependsOn: initial_setup
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - template: .azure-pipelines/steps/install-node-modules.yml
+      - script: npm run format:check -- --base $(BASE_SHA) --parallel
+
+  - job: lint
+    dependsOn: initial_setup
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - template: .azure-pipelines/steps/install-node-modules.yml
+      - script: npm run affected -- --target lint --base $(BASE_SHA) --parallel
+
+  - job: test
+    dependsOn: initial_setup
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - template: .azure-pipelines/steps/install-node-modules.yml
+      - script: npm run affected -- --target test --base $(BASE_SHA) --parallel
+
+  - job: e2e
+    dependsOn: initial_setup
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - template: .azure-pipelines/steps/install-node-modules.yml
+      - script: npm run affected -- --target e2e --base $(BASE_SHA)
+
+  - job: build
+    dependsOn: initial_setup
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - template: .azure-pipelines/steps/install-node-modules.yml
+      - script: npm run affected -- --target build --base $(BASE_SHA) --parallel
