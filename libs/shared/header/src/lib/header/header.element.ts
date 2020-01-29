@@ -22,7 +22,7 @@ export class HeaderElement extends HTMLElement {
     this.setAttribute(HeaderElementAttribute.Title, title);
   }
 
-  private titleElement = document.createElement('h2');
+  private titleElement = document.createElement('h3');
 
   connectedCallback() {
     this.appendChild(this.createLeftSide());
