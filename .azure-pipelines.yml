@@ -2,6 +2,8 @@ trigger:
   - master
 
 variables:
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  CYPRESS_CACHE_FOLDER: $(Pipeline.Workspace)/.cypress
   BASE_BRANCH: $[ coalesce(variables['System.PullRequest.TargetBranch'], 'master~1') ]
   BASE_SHA: origin/$BASE_BRANCH
 
