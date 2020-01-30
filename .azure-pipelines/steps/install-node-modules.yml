@@ -3,16 +3,28 @@ steps:
     inputs:
       versionSpec: '12.x'
     displayName: 'Install Node.js'
+
+  - script: sudo apt-get install libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+    displayName: 'Install other dependencies'
   - task: Cache@2
     inputs:
-      key: 'yarn | "$(Agent.OS)" | yarn.lock'
+      key: 'npm | "$(Agent.OS)" | package-lock.json'
       restoreKeys: |
-        yarn | "$(Agent.OS)"
-        yarn
-      path: node_modules
-      cacheHitVar: CACHE_RESTORED
-    displayName: Cache Yarn packages
+        npm | "$(Agent.OS)"
+        npm
+      path: $(npm_config_cache)
+    displayName: Cache Npm Dependencies
+  - task: Cache@2
+    inputs:
+      key: 'cypress | "$(Agent.OS)" | package-lock.json'
+      restoreKeys: |
+        cypress | "$(Agent.OS)"
+        cypress
+      path: $(CYPRESS_CACHE_FOLDER)
+    displayName: Cache Cypress
 
-  - script: |
-      yarn install --ignore-engines --frozen-lockfile
-    displayName: Install dependencies
+  - script: npm ci
+    displayName: Install Npm Dependencies
+
+  - script: npx cypress verify
+    displayName: Verify Cypress

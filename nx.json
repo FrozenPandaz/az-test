@@ -5,6 +5,7 @@
     "package.json": "*",
     "tsconfig.json": "*",
     "tslint.json": "*",
+    ".azure-pipelines.yml": "*",
     "nx.json": "*"
   },
   "tasksRunnerOptions": {
